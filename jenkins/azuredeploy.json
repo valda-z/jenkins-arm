@@ -35,7 +35,7 @@
       "type": "String"
     },
     "ACR_URL": {
-      "defaultValue": null,
+      "defaultValue": "https://",
       "type": "String",
       "metadata": {
         "description": "Azure Container registry URL (https://######.azurecr.io)"
