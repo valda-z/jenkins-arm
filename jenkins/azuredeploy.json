@@ -14,10 +14,6 @@
         "description": "Password for the Virtual Machine."
       }
     },
-    "disks_jenkins_name": {
-      "defaultValue": "jenkins",
-      "type": "String"
-    },
     "virtualMachines_jenkins_name": {
       "defaultValue": "jenkins",
       "type": "String"
@@ -85,26 +81,7 @@
     "jenkins_install_scriptScriptFolder": "jenkins",
     "jenkins_install_scriptScriptFileName": "jenkins-acr.sh"
   },
-  "resources": [
-    {
-      "comments": "Generalized from resource: '/subscriptions/3b733633-3eb3-4636-8dbd-b094113693d1/resourceGroups/J0/providers/Microsoft.Compute/disks/jenkins'.",
-      "type": "Microsoft.Compute/disks",
-      "name": "[parameters('disks_jenkins_name')]",
-      "apiVersion": "2016-04-30-preview",
-      "location": "westeurope",
-      "properties": {
-        "accountType": "Premium_LRS",
-        "osType": "Linux",
-        "creationData": {
-          "createOption": "FromImage",
-          "imageReference": {
-            "id": "/Subscriptions/3b733633-3eb3-4636-8dbd-b094113693d1/Providers/Microsoft.Compute/Locations/westeurope/Publishers/Canonical/ArtifactTypes/VMImage/Offers/UbuntuServer/Skus/16.04-LTS/Versions/latest"
-          }
-        },
-        "diskSizeGB": 30
-      },
-      "dependsOn": []
-    },
+  
     {
       "comments": "Generalized from resource: '/subscriptions/3b733633-3eb3-4636-8dbd-b094113693d1/resourceGroups/J0/providers/Microsoft.Compute/virtualMachines/jenkins'.",
       "type": "Microsoft.Compute/virtualMachines",
@@ -119,19 +96,15 @@
           "imageReference": {
             "publisher": "Canonical",
             "offer": "UbuntuServer",
-            "sku": "16.04-LTS",
+            "sku": "16.10",
             "version": "latest"
           },
           "osDisk": {
-            "osType": "Linux",
             "name": "[parameters('virtualMachines_jenkins_name')]",
-            "createOption": "FromImage",
-            "caching": "ReadWrite",
+            "createOption": "fromImage",
             "managedDisk": {
-              "storageAccountType": "Premium_LRS",
-              "id": "[resourceId('Microsoft.Compute/disks', parameters('disks_jenkins_name'))]"
-            },
-            "diskSizeGB": 30
+              "storageAccountType": "Premium_LRS"
+            }
           },
           "dataDisks": []
         },
@@ -149,7 +122,6 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Compute/disks', parameters('disks_jenkins_name'))]",
         "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_jenkins581_name'))]"
       ],
       "resources": [
