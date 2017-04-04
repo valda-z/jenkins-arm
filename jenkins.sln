@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "jenkins", "jenkins\jenkins.deployproj", "{986EC660-18BD-4081-B9BD-246F5A790EBA}"
 EndProject
+Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "jenkins1404", "jenkins1404\jenkins1404.deployproj", "{1FF9A850-FE2B-4EA2-9F7D-53DA694145BA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{986EC660-18BD-4081-B9BD-246F5A790EBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{986EC660-18BD-4081-B9BD-246F5A790EBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{986EC660-18BD-4081-B9BD-246F5A790EBA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FF9A850-FE2B-4EA2-9F7D-53DA694145BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FF9A850-FE2B-4EA2-9F7D-53DA694145BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FF9A850-FE2B-4EA2-9F7D-53DA694145BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FF9A850-FE2B-4EA2-9F7D-53DA694145BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
