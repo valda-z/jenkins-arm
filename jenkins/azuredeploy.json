@@ -79,7 +79,8 @@
   },
   "variables": {
     "jenkins_install_scriptScriptFolder": "jenkins",
-    "jenkins_install_scriptScriptFileName": "jenkins-acr.sh"
+    "jenkins_install_scriptScriptFileName": "jenkins-acr.sh",
+    "vmExtensionName": "initializeJenkins"
   },
   "resources": [
     {
@@ -125,30 +126,6 @@
         "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_jenkins581_name'))]"
       ],
       "resources": [
-        {
-          "name": "jenkins_install_script",
-          "type": "extensions",
-          "location": "westeurope",
-          "apiVersion": "2016-03-30",
-          "dependsOn": [
-            "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachines_jenkins_name'))]"
-          ],
-          "tags": {
-            "displayName": "jenkins_install_script"
-          },
-          "properties": {
-            "publisher": "Microsoft.OSTCExtensions",
-            "type": "CustomScriptForLinux",
-            "typeHandlerVersion": "1.4",
-            "autoUpgradeMinorVersion": true,
-            "settings": {
-              "fileUris": [
-                "[concat(parameters('_artifactsLocation'), '/', variables('jenkins_install_scriptScriptFolder'), '/', variables('jenkins_install_scriptScriptFileName'), parameters('_artifactsLocationSasToken'))]"
-              ],
-              "commandToExecute": "[concat('sudo /bin/bash ', variables('jenkins_install_scriptScriptFileName'),' --vm_user_name ', parameters('adminUsername') , ' --git_url \"', parameters('gitRepository') , '\" --registry \"', parameters('ACR_URL'), '\" --registry_user_name \"', parameters('ACR_Username'), '\" --registry_password \"', parameters('ACR_Password'), '\"')]"
-            }
-          }
-        }
       ]
     },
     {
@@ -259,6 +236,29 @@
         ]
       },
       "dependsOn": []
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('virtualMachines_jenkins_name'), '/', variables('vmExtensionName'))]",
+      "apiVersion": "2015-06-15",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachines_jenkins_name'))]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Azure.Extensions",
+        "type": "CustomScript",
+        "typeHandlerVersion": "2.0",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "fileUris": [
+            "[concat(parameters('_artifactsLocation'), '/', variables('jenkins_install_scriptScriptFolder'), '/', variables('jenkins_install_scriptScriptFileName'), parameters('_artifactsLocationSasToken'))]"
+          ]
+        },
+        "protectedSettings": {
+          "commandToExecute": "[concat('./', variables('jenkins_install_scriptScriptFileName'),' --vm_user_name ', parameters('adminUsername') , ' --git_url \"', parameters('gitRepository') , '\" --registry \"', parameters('ACR_URL'), '\" --registry_user_name \"', parameters('ACR_Username'), '\" --registry_password \"', parameters('ACR_Password'), '\" -al \"', parameters('_artifactsLocation'), '\" -st \"', parameters('_artifactsLocationSasToken'), '\"' )]"
+        }
+      }
     }
   ]
 }
