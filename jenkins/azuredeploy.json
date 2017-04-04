@@ -1,0 +1,292 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "adminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "User name for the Virtual Machine."
+      }
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password for the Virtual Machine."
+      }
+    },
+    "disks_jenkins_name": {
+      "defaultValue": "jenkins",
+      "type": "String"
+    },
+    "virtualMachines_jenkins_name": {
+      "defaultValue": "jenkins",
+      "type": "String"
+    },
+    "networkInterfaces_jenkins581_name": {
+      "defaultValue": "jenkins581",
+      "type": "String"
+    },
+    "networkSecurityGroups_jenkins_nsg_name": {
+      "defaultValue": "jenkins-nsg",
+      "type": "String"
+    },
+    "publicIPAddresses_jenkins_ip_name": {
+      "defaultValue": "jenkins-ip",
+      "type": "String"
+    },
+    "virtualNetworks_J0_vnet_name": {
+      "defaultValue": "jenkins-vnet",
+      "type": "String"
+    },
+    "ACR_URL": {
+      "defaultValue": null,
+      "type": "String",
+      "metadata": {
+        "description": "Azure Container registry URL (https://######.azurecr.io)"
+      }
+    },
+    "ACR_Username": {
+      "defaultValue": null,
+      "type": "String",
+      "metadata": {
+        "description": "Azure Container registry Username"
+      }
+    },
+    "ACR_Password": {
+      "defaultValue": null,
+      "type": "String",
+      "metadata": {
+        "description": "Azure Container registry Password"
+      }
+    },
+    "_artifactsLocation": {
+      "defaultValue": "https://raw.githubusercontent.com/valda-z/jenkins-arm/master",
+      "type": "string",
+      "metadata": {
+        "description": "Auto-generated container in staging storage account to receive post-build staging folder upload"
+      }
+    },
+    "_artifactsLocationSasToken": {
+      "defaultValue": "",
+      "type": "securestring",
+      "metadata": {
+        "description": "Auto-generated token to access _artifactsLocation"
+      }
+    },
+    "gitRepository": {
+      "type": "string",
+      "metadata": {
+        "description": "URL to a public git repository that includes a Dockerfile."
+      },
+      "defaultValue": "https://github.com/lwander/spin-kub-demo.git"
+    }
+  },
+  "variables": {
+    "jenkins_install_scriptScriptFolder": "jenkins",
+    "jenkins_install_scriptScriptFileName": "jenkins-acr.sh"
+  },
+  "resources": [
+    {
+      "comments": "Generalized from resource: '/subscriptions/3b733633-3eb3-4636-8dbd-b094113693d1/resourceGroups/J0/providers/Microsoft.Compute/disks/jenkins'.",
+      "type": "Microsoft.Compute/disks",
+      "name": "[parameters('disks_jenkins_name')]",
+      "apiVersion": "2016-04-30-preview",
+      "location": "westeurope",
+      "properties": {
+        "accountType": "Premium_LRS",
+        "osType": "Linux",
+        "creationData": {
+          "createOption": "FromImage",
+          "imageReference": {
+            "id": "/Subscriptions/3b733633-3eb3-4636-8dbd-b094113693d1/Providers/Microsoft.Compute/Locations/westeurope/Publishers/Canonical/ArtifactTypes/VMImage/Offers/UbuntuServer/Skus/16.04-LTS/Versions/latest"
+          }
+        },
+        "diskSizeGB": 30
+      },
+      "dependsOn": []
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/3b733633-3eb3-4636-8dbd-b094113693d1/resourceGroups/J0/providers/Microsoft.Compute/virtualMachines/jenkins'.",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[parameters('virtualMachines_jenkins_name')]",
+      "apiVersion": "2016-04-30-preview",
+      "location": "westeurope",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_DS2_v2"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "16.04-LTS",
+            "version": "latest"
+          },
+          "osDisk": {
+            "osType": "Linux",
+            "name": "[parameters('virtualMachines_jenkins_name')]",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "storageAccountType": "Premium_LRS",
+              "id": "[resourceId('Microsoft.Compute/disks', parameters('disks_jenkins_name'))]"
+            },
+            "diskSizeGB": 30
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "[parameters('virtualMachines_jenkins_name')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_jenkins581_name'))]"
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/disks', parameters('disks_jenkins_name'))]",
+        "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_jenkins581_name'))]"
+      ],
+      "resources": [
+        {
+          "name": "jenkins_install_script",
+          "type": "extensions",
+          "location": "westeurope",
+          "apiVersion": "2016-03-30",
+          "dependsOn": [
+            "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachines_jenkins_name'))]"
+          ],
+          "tags": {
+            "displayName": "jenkins_install_script"
+          },
+          "properties": {
+            "publisher": "Microsoft.OSTCExtensions",
+            "type": "CustomScriptForLinux",
+            "typeHandlerVersion": "1.4",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "fileUris": [
+                "[concat(parameters('_artifactsLocation'), '/', variables('jenkins_install_scriptScriptFolder'), '/', variables('jenkins_install_scriptScriptFileName'), parameters('_artifactsLocationSasToken'))]"
+              ],
+              "commandToExecute": "[concat('sh ', variables('jenkins_install_scriptScriptFileName'),' -u \"', parameters('adminUsername') , '\" -g \"', parameters('gitRepository') , '\" -r \"', parameters('ACR_URL'), '\" -ru \"', parameters('ACR_Username'), '\" -rp \"', parameters('ACR_Password'), '\" -al \"', parameters('_artifactsLocation'), '\" -st \"', parameters('_artifactsLocationSasToken'), '\"')]"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/3b733633-3eb3-4636-8dbd-b094113693d1/resourceGroups/J0/providers/Microsoft.Network/networkInterfaces/jenkins581'.",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[parameters('networkInterfaces_jenkins581_name')]",
+      "apiVersion": "2016-03-30",
+      "location": "westeurope",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAddress": "10.1.0.4",
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_jenkins_ip_name'))]"
+              },
+              "subnet": {
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_J0_vnet_name')), '/subnets/default')]"
+              }
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableIPForwarding": false,
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_jenkins_nsg_name'))]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_jenkins_ip_name'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_J0_vnet_name'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_jenkins_nsg_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/3b733633-3eb3-4636-8dbd-b094113693d1/resourceGroups/J0/providers/Microsoft.Network/networkSecurityGroups/jenkins-nsg'.",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[parameters('networkSecurityGroups_jenkins_nsg_name')]",
+      "apiVersion": "2016-03-30",
+      "location": "westeurope",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "default-allow-ssh",
+            "properties": {
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "22",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 1000,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "default-allow-http-8080",
+            "properties": {
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "8080",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 1010,
+              "direction": "Inbound"
+            }
+          }
+        ]
+      },
+      "dependsOn": []
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/3b733633-3eb3-4636-8dbd-b094113693d1/resourceGroups/J0/providers/Microsoft.Network/publicIPAddresses/jenkins-ip'.",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[parameters('publicIPAddresses_jenkins_ip_name')]",
+      "apiVersion": "2016-03-30",
+      "location": "westeurope",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "idleTimeoutInMinutes": 4
+      },
+      "dependsOn": []
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/3b733633-3eb3-4636-8dbd-b094113693d1/resourceGroups/J0/providers/Microsoft.Network/virtualNetworks/J0-vnet'.",
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[parameters('virtualNetworks_J0_vnet_name')]",
+      "apiVersion": "2016-03-30",
+      "location": "westeurope",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "10.1.0.0/24"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "default",
+            "properties": {
+              "addressPrefix": "10.1.0.0/24"
+            }
+          }
+        ]
+      },
+      "dependsOn": []
+    }
+  ]
+}
