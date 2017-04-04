@@ -274,14 +274,14 @@
       "properties": {
         "addressSpace": {
           "addressPrefixes": [
-            "10.1.0.0/24"
+            "10.100.0.0/24"
           ]
         },
         "subnets": [
           {
             "name": "default",
             "properties": {
-              "addressPrefix": "10.1.0.0/24"
+              "addressPrefix": "10.100.0.0/24"
             }
           }
         ]
