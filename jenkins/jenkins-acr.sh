@@ -27,7 +27,7 @@ function throw_if_empty() {
 }
 
 #defaults
-artifact_origin_location="https://raw.githubusercontent.com/Azure/azure-devops-utils/master/"
+artifacts_origin_location="https://raw.githubusercontent.com/Azure/azure-devops-utils/master/"
 artifacts_location="https://raw.githubusercontent.com/valda-z/jenkins-arm/master/"
 while [[ $# > 0 ]]
 do
