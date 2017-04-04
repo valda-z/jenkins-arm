@@ -145,7 +145,7 @@
               "fileUris": [
                 "[concat(parameters('_artifactsLocation'), '/', variables('jenkins_install_scriptScriptFolder'), '/', variables('jenkins_install_scriptScriptFileName'), parameters('_artifactsLocationSasToken'))]"
               ],
-              "commandToExecute": "[concat('sh ', variables('jenkins_install_scriptScriptFileName'),' -u \"', parameters('adminUsername') , '\" -g \"', parameters('gitRepository') , '\" -r \"', parameters('ACR_URL'), '\" -ru \"', parameters('ACR_Username'), '\" -rp \"', parameters('ACR_Password'), '\" -al \"', parameters('_artifactsLocation'), '\" -st \"', parameters('_artifactsLocationSasToken'), '\"')]"
+              "commandToExecute": "[concat('bash ', variables('jenkins_install_scriptScriptFileName'),' -u \"', parameters('adminUsername') , '\" -g \"', parameters('gitRepository') , '\" -r \"', parameters('ACR_URL'), '\" -ru \"', parameters('ACR_Username'), '\" -rp \"', parameters('ACR_Password'), '\" -al \"', parameters('_artifactsLocation'), '\" -st \"', parameters('_artifactsLocationSasToken'), '\"')]"
             }
           }
         }
