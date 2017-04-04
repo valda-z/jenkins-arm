@@ -81,7 +81,7 @@
     "jenkins_install_scriptScriptFolder": "jenkins",
     "jenkins_install_scriptScriptFileName": "jenkins-acr.sh"
   },
-  
+  "resources": [
     {
       "comments": "Generalized from resource: '/subscriptions/3b733633-3eb3-4636-8dbd-b094113693d1/resourceGroups/J0/providers/Microsoft.Compute/virtualMachines/jenkins'.",
       "type": "Microsoft.Compute/virtualMachines",
