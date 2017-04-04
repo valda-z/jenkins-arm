@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "jenkins", "jenkins\jenkins.deployproj", "{986EC660-18BD-4081-B9BD-246F5A790EBA}"
 EndProject
-Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "jenkins1404", "jenkins1404\jenkins1404.deployproj", "{1FF9A850-FE2B-4EA2-9F7D-53DA694145BA}"
+Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "jenkins1604", "jenkins1604\jenkins1604.deployproj", "{1FF9A850-FE2B-4EA2-9F7D-53DA694145BA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
