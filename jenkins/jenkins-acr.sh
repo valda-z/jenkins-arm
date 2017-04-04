@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 function print_usage() {
   cat <<EOF
 https://github.com/valda-z/jenkins-arm
